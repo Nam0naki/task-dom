@@ -26,29 +26,19 @@ export function appendToBody(tag, content, count) {
   Сформированное дерево верните в качестве результата работы функции.
 */
 export function generateTree(childrenCount, level) {
-  function createLevelNode(currentLevel) {
-    if (currentLevel > level || childrenCount <= 0) {
-      return null;
-    }
+  function createNode(currentLevel) {
+    const div = document.createElement('div');
+    div.classList.add(`item_${currentLevel}`);
 
-    const container = document.createElement('div');
-
-    for (let i = 0; i < childrenCount; i += 1) {
-      const node = document.createElement('div');
-      node.classList.add(`item_${currentLevel}`);
-
-      const childTree = createLevelNode(currentLevel + 1);
-      if (childTree) {
-        node.appendChild(childTree);
+    if (currentLevel < level) {
+      for (let i = 0; i < childrenCount; i++) {
+        div.appendChild(createNode(currentLevel + 1));
       }
-
-      container.appendChild(node);
     }
-
-    return container;
+    return div;
   }
 
-  return createLevelNode(1);
+  return createNode(1);
 }
 
 /*
@@ -60,20 +50,18 @@ export function generateTree(childrenCount, level) {
   Сформированное дерево верните в качестве результата работы функции.
 */
 export function replaceNodes() {
-  const tree = generateTree(2, 3);
-  if (!tree) return null;
+  let tree = generateTree(2, 3);
+  const secondLevelNodes = tree.querySelectorAll('.item_2');
 
-  const levelTwoNodes = tree.querySelectorAll('.item_2');
-
-  levelTwoNodes.forEach((oldNode) => {
+  secondLevelNodes.forEach(node => {
     const section = document.createElement('section');
-    section.className = oldNode.className;
-
-    while (oldNode.firstChild) {
-      section.appendChild(oldNode.firstChild);
+    section.className = node.className;
+    
+    while (node.firstChild) {
+      section.appendChild(node.firstChild);
     }
-
-    oldNode.replaceWith(section);
+    
+    node.parentNode.replaceChild(section, node);
   });
 
   return tree;
